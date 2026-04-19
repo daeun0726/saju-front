@@ -24,7 +24,7 @@ export default function ProfileHeader({ profile }: { profile: SajuProfile }) {
           <p className="text-[#aaa] text-[12px] mt-1">
             {profile.gender} · {profile.location}
           </p>
-          <div className="flex flex-wrap gap-x-1.5 gap-y-1 mt-2 opacity-80">
+          <div className="flex flex-wrap gap-x-1.5 mt-2 opacity-80">
             {profile.hobbies.map((hobby) => (
               <span
                 key={hobby}

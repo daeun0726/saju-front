@@ -33,7 +33,7 @@ export default function TodayFortuneSection({
 }) {
   return (
     <div className="bg-white rounded-2xl px-4.5 py-4 space-y-2">
-      <p className="text-[12px] font-medium text-[#aaa] mb-2">오늘의 운세</p>
+      <p className="text-[12px] font-medium text-[#aaa]">오늘의 운세</p>
       <FortuneCard
         category="오늘 총운세"
         colorClass={CATEGORY_COLORS['오늘총운세']}
