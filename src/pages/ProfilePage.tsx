@@ -1,6 +1,5 @@
 import { useParams } from 'react-router-dom'
 import { mockProfile } from '../data/mockProfile'
-import { ohaengTheme } from '../utils/ohaeng'
 import ProfileHeader from '../components/profile/ProfileHeader'
 import SectionTabs from '../components/profile/SectionTabs'
 import Manseryuk from '../components/profile/Manseryuk'
@@ -15,11 +14,10 @@ export default function ProfilePage() {
 
   // TODO: fetch from SheetDB using _id
   const profile = mockProfile
-  const theme = ohaengTheme[profile.mainOhaeng]
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-100.5 mx-auto bg-white min-h-screen">
+    <div className="min-h-screen bg-[#f8f8f8]">
+      <div className="max-w-107.5 mx-auto min-h-screen">
         <div className="px-4 pt-6">
           <ProfileHeader profile={profile} />
         </div>
@@ -29,84 +27,74 @@ export default function ProfilePage() {
         <div className="px-4 pb-16 space-y-6">
           {/* 사주팔자 */}
           <section id="saju">
-            <p className="text-xs text-gray-400 pt-5 mb-3">사주해석</p>
+            <p className="text-[14px] font-bold text-[#222] pt-5 mb-2.5">사주해석</p>
             <div className="space-y-3">
               <Manseryuk pillars={profile.pillars} />
               <OhaengDistribution count={profile.ohaengCount} />
 
               {/* 일간 */}
-              <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                <p className="text-xs text-gray-400 mb-3">일간</p>
-                <div className="flex items-center gap-3 mb-3">
-                  <div
-                    className={`w-12 h-12 rounded-xl ${theme.chipBg} flex items-center justify-center shrink-0`}
-                  >
-                    <span className={`text-2xl font-medium ${theme.chipText}`}>
+              <div className="bg-white rounded-2xl px-[18px] py-[16px] space-y-[11px]">
+                <p className="text-[12px] font-medium text-[#aaa]">일간</p>
+                <div className="bg-[#f9f9f9] rounded-xl flex items-center gap-3 px-[14px] py-[15px]">
+                  <div className="bg-[#c8d9e6] rounded-[4px] p-1 shrink-0">
+                    <span className="text-[32px] font-bold text-[#2f4156] leading-[32px]">
                       {profile.dayMaster.character}
                     </span>
                   </div>
-                  <div>
-                    <p className="text-sm font-semibold text-gray-900">{profile.dayMaster.name}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">{profile.dayMaster.subtitle}</p>
+                  <div className="space-y-0.5">
+                    <p className="text-[13px] font-bold text-[#222]">{profile.dayMaster.name}</p>
+                    <p className="text-[12px] text-[#aaa]">{profile.dayMaster.subtitle}</p>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 leading-relaxed">
+                <p className="text-[13px] text-[#444] leading-[22px]">
                   {profile.dayMaster.description}
                 </p>
               </div>
 
               {/* 기본 성격 */}
-              <div className="bg-white rounded-2xl border border-gray-100 p-4">
-                <p className="text-xs text-gray-400 mb-4">기본 성격</p>
-                <div className="space-y-4">
-                  {[
-                    { label: '타고난 기질', ...profile.personality.innate },
-                    { label: '강점', ...profile.personality.strength },
-                    { label: '약점', ...profile.personality.weakness },
-                  ].map((item, i) => (
-                    <div key={item.label} className={i > 0 ? 'border-t border-gray-100 pt-4' : ''}>
-                      <p className="text-xs text-gray-400 mb-1">{item.label}</p>
-                      <p className="text-sm font-semibold text-gray-900 mb-1">{item.title}</p>
-                      <p className="text-sm text-gray-600 leading-relaxed">{item.description}</p>
-                    </div>
-                  ))}
-                </div>
+              <div className="bg-white rounded-2xl px-[18px] py-[16px] space-y-2">
+                <p className="text-[12px] font-medium text-[#aaa] mb-2">기본 성격</p>
+                {[
+                  { label: '타고난 기질', ...profile.personality.innate },
+                  { label: '강점', ...profile.personality.strength },
+                  { label: '약점', ...profile.personality.weakness },
+                ].map((item) => (
+                  <div key={item.label} className="bg-[#f9f9f9] rounded-xl px-[14px] py-3 space-y-1">
+                    <p className="text-[11px] font-bold text-[#e24f63]">{item.label}</p>
+                    <p className="text-[14px] font-bold text-[#222]">{item.title}</p>
+                    <p className="text-[13px] text-[#666] leading-[21px] pt-px">{item.description}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </section>
 
           {/* 연애운 */}
-          <section id="love">
-            <p className="text-xs text-gray-400 mb-3">연애</p>
+          <section id="love" className="space-y-2.5">
             <LoveSection
               love={profile.love}
               yearlyLove={profile.yearlyLove}
-              ohaeng={profile.mainOhaeng}
             />
           </section>
 
           {/* 직업운 */}
           <section id="career">
-            <p className="text-xs text-gray-400 mb-3">직업운</p>
-            <div className="bg-white rounded-2xl border border-gray-100 p-4">
-              <p className="text-sm text-gray-400">준비 중이에요</p>
+            <div className="bg-white rounded-2xl px-4.5 py-4">
+              <p className="text-[12px] font-medium text-[#aaa] mb-2">직업운</p>
+              <p className="text-[13px] text-[#aaa]">준비 중이에요</p>
             </div>
           </section>
 
           {/* 세운/월운 */}
           <section id="fortune">
-            <p className="text-xs text-gray-400 mb-3">오늘의 운세</p>
             <TodayFortuneSection todayFortune={profile.todayFortune} />
           </section>
 
           {/* 궁합 TOP 3 */}
-          <CompatibilitySection
-            compatibility={profile.compatibility}
-            ohaeng={profile.mainOhaeng}
-          />
+          <CompatibilitySection compatibility={profile.compatibility} />
 
           {/* 다른 참가자들 */}
-          <OtherProfiles profiles={profile.otherProfiles} ohaeng={profile.mainOhaeng} />
+          <OtherProfiles profiles={profile.otherProfiles} />
         </div>
       </div>
     </div>

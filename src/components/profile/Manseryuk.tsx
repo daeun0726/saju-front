@@ -17,13 +17,13 @@ export default function Manseryuk({ pillars }: { pillars: SajuProfile['pillars']
           return (
             <div key={key} className="flex flex-col items-center gap-1.5">
               <p className="text-[10px] text-gray-400">{label}</p>
-              <div className="w-full rounded-xl bg-amber-50 py-4 flex flex-col items-center gap-1">
-                <span className="text-2xl font-medium text-gray-800">{pillar.stem}</span>
-                <span className="text-[10px] text-gray-500">{pillar.stemName}</span>
+              <div className="w-full rounded-xl bg-[#c8d9e6] py-5 flex flex-col items-center gap-0.5">
+                <span className="text-[24px] font-bold text-[#2f4156] leading-[24px]">{pillar.stem}</span>
+                <span className="text-[10px] text-[#2f4156] mt-[3px]">{pillar.stemName}</span>
               </div>
-              <div className="w-full rounded-xl bg-emerald-50 py-4 flex flex-col items-center gap-1">
-                <span className="text-2xl font-medium text-gray-800">{pillar.branch}</span>
-                <span className="text-[10px] text-gray-500">{pillar.branchName}</span>
+              <div className="w-full rounded-xl bg-[#eef3df] py-5 flex flex-col items-center gap-0.5">
+                <span className="text-[24px] font-bold text-[#434f3f] leading-[24px]">{pillar.branch}</span>
+                <span className="text-[10px] text-[#434f3f] mt-[3px]">{pillar.branchName}</span>
               </div>
             </div>
           )
