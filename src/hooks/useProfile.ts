@@ -19,7 +19,7 @@ export function useProfile(id: string | undefined): ProfileState {
     let cancelled = false
     setState({ status: 'loading' })
 
-    const url = `${import.meta.env.VITE_SCRIPT_URL}?id=${encodeURIComponent(id)}`
+    const url = `/api/profile?id=${encodeURIComponent(id)}`
 
     fetch(url)
       .then((res) => {
