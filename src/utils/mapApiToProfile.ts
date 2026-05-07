@@ -1,19 +1,15 @@
 import type { SajuProfile, Ohaeng } from '../types/profile'
-import type { Manseryeok, SajuResult, CompatResult } from '../types/api'
+import type { Manseryeok, SajuResult, CompatResult, AllParticipant } from '../types/api'
 import { parsePillar } from './pillars'
 
 function join(arr: string[]): string {
   return arr.join(' ')
 }
 
-// 시트 컬럼명에 공백이 붙어 있는 경우를 처리
 function normalizeKeys(raw: Record<string, string>): Record<string, string> {
   return Object.fromEntries(Object.entries(raw).map(([k, v]) => [k.trim(), v]))
 }
 
-// Drive URL 두 가지 형식 모두 처리
-// 형식1: https://drive.google.com/file/d/{id}/view
-// 형식2: https://drive.google.com/open?id={id}
 function convertDriveUrl(url: string): string {
   const pathMatch = url.match(/\/d\/([^/?]+)/)
   if (pathMatch) return `https://drive.google.com/uc?export=view&id=${pathMatch[1]}`
@@ -22,10 +18,21 @@ function convertDriveUrl(url: string): string {
   return url
 }
 
-// "금(金)", "목(木)" 등에서 오행 한글만 추출
 const OHAENG_LIST: Ohaeng[] = ['목', '화', '토', '금', '수']
 function parseOhaeng(value: string): Ohaeng {
   return OHAENG_LIST.find((o) => value.includes(o)) ?? '목'
+}
+
+// 닉네임 → AllParticipant 매핑 (Gemini가 "님" 붙이는 경우 대비)
+function buildPhotoMap(participants: AllParticipant[]): Map<string, string> {
+  const map = new Map<string, string>()
+  for (const p of participants) {
+    if (!p.photo) continue
+    const url = convertDriveUrl(p.photo)
+    map.set(p.nickname, url)
+    map.set(p.nickname + '님', url)
+  }
+  return map
 }
 
 export function mapApiToProfile(raw: Record<string, string>, id: string): SajuProfile {
@@ -37,39 +44,49 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
   let compatResult: CompatResult | null = null
   const compatRaw = r['궁합결과']
   if (compatRaw && compatRaw.trim() !== '' && compatRaw !== 'null') {
-    try {
-      compatResult = JSON.parse(compatRaw)
-    } catch {
-      // 궁합 데이터 파싱 실패 시 null 유지
-    }
+    try { compatResult = JSON.parse(compatRaw) } catch { /* null 유지 */ }
   }
+
+  let allParticipants: AllParticipant[] = []
+  const allRaw = r['전체참가자']
+  if (allRaw && allRaw.trim() !== '' && allRaw !== 'null') {
+    try { allParticipants = JSON.parse(allRaw) } catch { /* 빈 배열 유지 */ }
+  }
+
+  const photoMap = buildPhotoMap(allParticipants)
 
   const { 사주4주, 오행분포 } = manseryeok
   const { day_master } = sajuResult.saju_summary
   const { love_style, love_fortune, fortune_today, personality, compat_summary } = sajuResult
 
   const mainOhaeng = parseOhaeng(compat_summary.element)
-
   const idealTypeTitle = love_style.match_type[0] ?? ''
   const idealTypeDesc = join(love_style.match_type.slice(1))
 
   const compatibility = compatResult?.top3.map((p) => ({
     name: p.nickname,
     gender: p.desc,
-    location: '',
     score: p.score,
+    photoUrl: photoMap.get(p.nickname) ?? photoMap.get(p.nickname.replace(/님$/, '')),
     strengths: p.good_tags,
     weaknesses: p.bad_tags,
     strengthDetail: p.good_detail,
     weaknessDetail: p.bad_detail,
   })) ?? []
 
-  const otherProfiles = compatResult?.other_participants.map((p) => ({
-    id: p.id ?? '',
-    name: p.nickname,
-    gender: p.desc,
-    location: '',
-  })) ?? []
+  // 전체참가자 필드 우선, 없으면 other_participants 폴백
+  const otherProfiles = allParticipants.length > 0
+    ? allParticipants.map((p) => ({
+        id: p.id,
+        name: p.nickname,
+        gender: p.gender,
+        photoUrl: p.photo ? convertDriveUrl(p.photo) : undefined,
+      }))
+    : (compatResult?.other_participants.map((p) => ({
+        id: p.id ?? '',
+        name: p.nickname,
+        gender: p.desc,
+      })) ?? [])
 
   const rawPhotoUrl = r['프로필 사진']
   const photoUrl = rawPhotoUrl ? convertDriveUrl(rawPhotoUrl) : undefined
@@ -111,10 +128,7 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
     },
     love: {
       style: join(love_style.my_style),
-      idealType: {
-        title: idealTypeTitle,
-        description: idealTypeDesc,
-      },
+      idealType: { title: idealTypeTitle, description: idealTypeDesc },
     },
     yearlyLove: {
       summary: love_fortune.overview.headline,

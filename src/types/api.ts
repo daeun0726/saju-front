@@ -89,3 +89,10 @@ export interface CompatResult {
     desc: string
   }[]
 }
+
+export interface AllParticipant {
+  id: string
+  nickname: string
+  gender: string
+  photo?: string
+}

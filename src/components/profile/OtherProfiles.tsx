@@ -4,6 +4,26 @@ import type { OtherProfile } from '../../types/profile'
 
 const INITIAL_SHOW = 3
 
+function Avatar({ name, photoUrl }: { name: string; photoUrl?: string }) {
+  const [imgError, setImgError] = useState(false)
+  const showPhoto = !!photoUrl && !imgError
+
+  return (
+    <div className="w-10 h-10 rounded-[20px] bg-[#f5f5f5] flex items-center justify-center shrink-0 overflow-hidden">
+      {showPhoto ? (
+        <img
+          src={photoUrl}
+          alt={name}
+          className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[14px] font-bold text-[#bbb]">{name[0]}</span>
+      )}
+    </div>
+  )
+}
+
 export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }) {
   const [expanded, setExpanded] = useState(false)
 
@@ -19,9 +39,7 @@ export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }
         {visible.map((profile, i) => {
           const inner = (
             <>
-              <div className="w-10 h-10 rounded-[20px] bg-[#f5f5f5] flex items-center justify-center shrink-0">
-                <span className="text-[14px] font-bold text-[#bbb]">{profile.name[0]}</span>
-              </div>
+              <Avatar name={profile.name} photoUrl={profile.photoUrl} />
               <div>
                 <p className="text-[14px] font-bold text-[#222]">{profile.name}</p>
                 <p className="text-[12px] text-[#aaa] mt-0.5">
@@ -54,9 +72,7 @@ export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }
           onClick={() => setExpanded((v) => !v)}
           className="w-full bg-white rounded-[14px] py-3 text-[13px] font-medium text-[#aaa] hover:bg-gray-50 transition-colors"
         >
-          {expanded
-            ? '접기'
-            : `더 보기 +${profiles.length - INITIAL_SHOW}명`}
+          {expanded ? '접기' : `더 보기 +${profiles.length - INITIAL_SHOW}명`}
         </button>
       )}
     </div>

@@ -1,13 +1,31 @@
+import { useState } from 'react'
 import type { CompatibilityPerson } from '../../types/profile'
+
+function Avatar({ name, photoUrl }: { name: string; photoUrl?: string }) {
+  const [imgError, setImgError] = useState(false)
+  const showPhoto = !!photoUrl && !imgError
+
+  return (
+    <div className="w-10 h-10 rounded-[20px] bg-[#ffeceb] flex items-center justify-center shrink-0 overflow-hidden">
+      {showPhoto ? (
+        <img
+          src={photoUrl}
+          alt={name}
+          className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
+        />
+      ) : (
+        <span className="text-[14px] font-medium text-[#e24f63]">{name[0]}</span>
+      )}
+    </div>
+  )
+}
 
 function CompatibilityCard({ person }: { person: CompatibilityPerson }) {
   return (
     <div className="bg-white border border-[#ebebeb] rounded-xl px-[17px] pt-[19px] pb-[15px] space-y-3">
-      {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="w-10 h-10 rounded-[20px] bg-[#ffeceb] flex items-center justify-center shrink-0">
-          <span className="text-[14px] font-medium text-[#e24f63]">{person.name[0]}</span>
-        </div>
+        <Avatar name={person.name} photoUrl={person.photoUrl} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between">
             <span className="text-[15px] font-medium text-[#222]">{person.name}</span>
@@ -19,7 +37,6 @@ function CompatibilityCard({ person }: { person: CompatibilityPerson }) {
         </div>
       </div>
 
-      {/* Tags */}
       <div className="space-y-2">
         <div>
           <p className="text-[11px] text-[#aaa] mb-1.5">잘 맞아요</p>
@@ -43,7 +60,6 @@ function CompatibilityCard({ person }: { person: CompatibilityPerson }) {
         </div>
       </div>
 
-      {/* Details */}
       <div className="border-t border-[#f0eee8] pt-[11px] space-y-2.5">
         <div>
           <p className="text-[11px] font-medium text-[#d4537e] mb-1">잘 맞는 부분</p>

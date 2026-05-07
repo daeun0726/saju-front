@@ -11,6 +11,7 @@ export interface CompatibilityPerson {
   name: string
   gender: string
   location?: string
+  photoUrl?: string
   score: number
   strengths: string[]
   weaknesses: string[]
@@ -23,6 +24,7 @@ export interface OtherProfile {
   name: string
   gender: string
   location?: string
+  photoUrl?: string
 }
 
 export interface SajuProfile {
