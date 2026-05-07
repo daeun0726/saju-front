@@ -31,6 +31,7 @@ export interface SajuProfile {
   gender: string
   location: string
   hobbies: string[]
+  photoUrl?: string
   mainOhaeng: Ohaeng
   ohaengCount: Record<Ohaeng, number>
   pillars: {

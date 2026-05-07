@@ -83,6 +83,7 @@ export interface CompatResult {
     bad_detail: string
   }[]
   other_participants: {
+    id?: string
     avatar: string
     nickname: string
     desc: string

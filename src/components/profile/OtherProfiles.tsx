@@ -28,7 +28,7 @@ export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }
           return profile.id ? (
             <Link
               key={profile.id}
-              to={`/profile/${profile.id}`}
+              to={`/profile/${profile.id}?preview=true`}
               className={`${baseClass} hover:bg-gray-50 transition-colors`}
             >
               {inner}

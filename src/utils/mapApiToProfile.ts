@@ -6,6 +6,12 @@ function join(arr: string[]): string {
   return arr.join(' ')
 }
 
+function convertDriveUrl(url: string): string {
+  const match = url.match(/\/d\/([^/?]+)/)
+  if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`
+  return url
+}
+
 export function mapApiToProfile(raw: Record<string, string>, id: string): SajuProfile {
   const sajuResult: SajuResult = JSON.parse(raw['사주결과'])
   const manseryeok: Manseryeok = JSON.parse(raw['만세력raw'])
@@ -41,11 +47,14 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
   })) ?? []
 
   const otherProfiles = compatResult?.other_participants.map((p) => ({
-    id: '',
+    id: p.id ?? '',
     name: p.nickname,
     gender: p.desc,
     location: '',
   })) ?? []
+
+  const rawPhotoUrl = raw['프로필 사진']
+  const photoUrl = rawPhotoUrl ? convertDriveUrl(rawPhotoUrl) : undefined
 
   return {
     id,
@@ -53,6 +62,7 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
     gender: sajuResult.profile.gender || raw['성별'],
     location: sajuResult.profile.location || raw['거주지'],
     hobbies: sajuResult.profile.hobby_tags,
+    photoUrl,
     mainOhaeng,
     ohaengCount: 오행분포,
     pillars: {

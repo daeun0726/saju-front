@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { SajuProfile } from '../../types/profile'
 
 const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
@@ -10,14 +11,25 @@ const AVATAR_COLORS: Record<string, { bg: string; text: string }> = {
 
 export default function ProfileHeader({ profile }: { profile: SajuProfile }) {
   const avatar = AVATAR_COLORS[profile.mainOhaeng] ?? AVATAR_COLORS['화']
+  const [imgError, setImgError] = useState(false)
+  const showPhoto = !!profile.photoUrl && !imgError
 
   return (
     <div className="bg-white rounded-2xl p-5">
       <div className="flex items-center gap-[14px]">
         <div
-          className={`w-[60px] h-[60px] rounded-[30px] ${avatar.bg} flex items-center justify-center flex-shrink-0`}
+          className={`w-[60px] h-[60px] rounded-[30px] ${showPhoto ? '' : avatar.bg} flex items-center justify-center flex-shrink-0 overflow-hidden`}
         >
-          <span className={`text-[22px] font-bold ${avatar.text}`}>{profile.name[0]}</span>
+          {showPhoto ? (
+            <img
+              src={profile.photoUrl}
+              alt={profile.name}
+              className="w-full h-full object-cover"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            <span className={`text-[22px] font-bold ${avatar.text}`}>{profile.name[0]}</span>
+          )}
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[#222] font-bold text-[17px] leading-snug">{profile.name}</p>

@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { useParams, useSearchParams } from 'react-router-dom'
 import { useProfile } from '../hooks/useProfile'
 import ProfileHeader from '../components/profile/ProfileHeader'
 import Manseryuk from '../components/profile/Manseryuk'
@@ -31,6 +31,8 @@ function ErrorScreen({ message }: { message: string }) {
 
 export default function ProfilePage() {
   const { id } = useParams<{ id: string }>()
+  const [searchParams] = useSearchParams()
+  const isPreview = searchParams.get('preview') === 'true'
   const state = useProfile(id)
 
   if (state.status === 'loading') return <LoadingScreen />
@@ -100,16 +102,18 @@ export default function ProfilePage() {
             />
           </section>
 
-          {/* 오늘의 운세 */}
-          <section id="fortune">
-            <TodayFortuneSection todayFortune={profile.todayFortune} />
-          </section>
+          {/* 오늘의 운세 이하 — preview 모드에서 숨김 */}
+          {!isPreview && (
+            <>
+              <section id="fortune">
+                <TodayFortuneSection todayFortune={profile.todayFortune} />
+              </section>
 
-          {/* 궁합 TOP 3 */}
-          <CompatibilitySection compatibility={profile.compatibility} />
+              <CompatibilitySection compatibility={profile.compatibility} />
 
-          {/* 다른 참가자들 */}
-          <OtherProfiles profiles={profile.otherProfiles} />
+              <OtherProfiles profiles={profile.otherProfiles} />
+            </>
+          )}
         </div>
       </div>
     </div>
