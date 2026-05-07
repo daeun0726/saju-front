@@ -13,7 +13,7 @@ function normalizeKeys(raw: Record<string, string>): Record<string, string> {
 function convertDriveUrl(url: string): string {
   const pathMatch = url.match(/\/d\/([^/?]+)/)
   const id = pathMatch?.[1] ?? url.match(/[?&]id=([^&]+)/)?.[1]
-  if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w400`
+  if (id) return `/api/photo?id=${id}`
   return url
 }
 
