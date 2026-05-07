@@ -6,18 +6,36 @@ function join(arr: string[]): string {
   return arr.join(' ')
 }
 
+// 시트 컬럼명에 공백이 붙어 있는 경우를 처리
+function normalizeKeys(raw: Record<string, string>): Record<string, string> {
+  return Object.fromEntries(Object.entries(raw).map(([k, v]) => [k.trim(), v]))
+}
+
+// Drive URL 두 가지 형식 모두 처리
+// 형식1: https://drive.google.com/file/d/{id}/view
+// 형식2: https://drive.google.com/open?id={id}
 function convertDriveUrl(url: string): string {
-  const match = url.match(/\/d\/([^/?]+)/)
-  if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`
+  const pathMatch = url.match(/\/d\/([^/?]+)/)
+  if (pathMatch) return `https://drive.google.com/uc?export=view&id=${pathMatch[1]}`
+  const queryMatch = url.match(/[?&]id=([^&]+)/)
+  if (queryMatch) return `https://drive.google.com/uc?export=view&id=${queryMatch[1]}`
   return url
 }
 
+// "금(金)", "목(木)" 등에서 오행 한글만 추출
+const OHAENG_LIST: Ohaeng[] = ['목', '화', '토', '금', '수']
+function parseOhaeng(value: string): Ohaeng {
+  return OHAENG_LIST.find((o) => value.includes(o)) ?? '목'
+}
+
 export function mapApiToProfile(raw: Record<string, string>, id: string): SajuProfile {
-  const sajuResult: SajuResult = JSON.parse(raw['사주결과'])
-  const manseryeok: Manseryeok = JSON.parse(raw['만세력raw'])
+  const r = normalizeKeys(raw)
+
+  const sajuResult: SajuResult = JSON.parse(r['사주결과'])
+  const manseryeok: Manseryeok = JSON.parse(r['만세력raw'])
 
   let compatResult: CompatResult | null = null
-  const compatRaw = raw['궁합결과']
+  const compatRaw = r['궁합결과']
   if (compatRaw && compatRaw.trim() !== '' && compatRaw !== 'null') {
     try {
       compatResult = JSON.parse(compatRaw)
@@ -30,7 +48,7 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
   const { day_master } = sajuResult.saju_summary
   const { love_style, love_fortune, fortune_today, personality, compat_summary } = sajuResult
 
-  const mainOhaeng = compat_summary.element as Ohaeng
+  const mainOhaeng = parseOhaeng(compat_summary.element)
 
   const idealTypeTitle = love_style.match_type[0] ?? ''
   const idealTypeDesc = join(love_style.match_type.slice(1))
@@ -53,14 +71,14 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
     location: '',
   })) ?? []
 
-  const rawPhotoUrl = raw['프로필 사진']
+  const rawPhotoUrl = r['프로필 사진']
   const photoUrl = rawPhotoUrl ? convertDriveUrl(rawPhotoUrl) : undefined
 
   return {
     id,
-    name: sajuResult.profile.nickname || raw['이름'],
-    gender: sajuResult.profile.gender || raw['성별'],
-    location: sajuResult.profile.location || raw['거주지'],
+    name: sajuResult.profile.nickname || r['이름'],
+    gender: sajuResult.profile.gender || r['성별'],
+    location: sajuResult.profile.location || r['거주지'],
     hobbies: sajuResult.profile.hobby_tags,
     photoUrl,
     mainOhaeng,
