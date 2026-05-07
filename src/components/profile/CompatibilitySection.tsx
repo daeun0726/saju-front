@@ -14,7 +14,7 @@ function CompatibilityCard({ person }: { person: CompatibilityPerson }) {
             <span className="text-[14px] font-medium text-[#e24f63]">{person.score}점</span>
           </div>
           <p className="text-[13px] text-[#999] mt-0.5">
-            {person.gender} · {person.location}
+            {person.gender}{person.location ? ` · ${person.location}` : ''}
           </p>
         </div>
       </div>
@@ -58,6 +58,17 @@ function CompatibilityCard({ person }: { person: CompatibilityPerson }) {
   )
 }
 
+function CompatibilityPending() {
+  return (
+    <div className="bg-white border border-[#ebebeb] rounded-xl px-[17px] py-8 flex flex-col items-center gap-2 text-center">
+      <p className="text-[15px] font-medium text-[#aaa]">궁합 분석 준비 중이에요</p>
+      <p className="text-[13px] text-[#bbb] leading-[20px]">
+        모든 참가자 신청이 완료되면<br />궁합 TOP 3를 확인할 수 있어요
+      </p>
+    </div>
+  )
+}
+
 export default function CompatibilitySection({
   compatibility,
 }: {
@@ -66,9 +77,13 @@ export default function CompatibilitySection({
   return (
     <div className="space-y-2.5">
       <p className="text-[14px] font-bold text-[#222]">궁합 TOP 3</p>
-      {compatibility.map((person) => (
-        <CompatibilityCard key={person.name} person={person} />
-      ))}
+      {compatibility.length === 0 ? (
+        <CompatibilityPending />
+      ) : (
+        compatibility.map((person) => (
+          <CompatibilityCard key={person.name} person={person} />
+        ))
+      )}
     </div>
   )
 }

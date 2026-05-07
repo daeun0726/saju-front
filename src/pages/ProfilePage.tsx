@@ -1,5 +1,5 @@
 import { useParams } from 'react-router-dom'
-import { mockProfile } from '../data/mockProfile'
+import { useProfile } from '../hooks/useProfile'
 import ProfileHeader from '../components/profile/ProfileHeader'
 import Manseryuk from '../components/profile/Manseryuk'
 import LoveSection from '../components/profile/LoveSection'
@@ -7,11 +7,36 @@ import TodayFortuneSection from '../components/profile/TodayFortuneSection'
 import CompatibilitySection from '../components/profile/CompatibilitySection'
 import OtherProfiles from '../components/profile/OtherProfiles'
 
-export default function ProfilePage() {
-  const { id: _id } = useParams<{ id: string }>()
+function LoadingScreen() {
+  return (
+    <div className="min-h-screen bg-[#f8f8f8] flex items-center justify-center">
+      <div className="text-center space-y-3">
+        <div className="w-10 h-10 border-2 border-[#e24f63] border-t-transparent rounded-full animate-spin mx-auto" />
+        <p className="text-[14px] text-[#aaa]">사주 카드를 불러오고 있어요</p>
+      </div>
+    </div>
+  )
+}
 
-  // TODO: fetch from SheetDB using _id
-  const profile = mockProfile
+function ErrorScreen({ message }: { message: string }) {
+  return (
+    <div className="min-h-screen bg-[#f8f8f8] flex items-center justify-center px-6">
+      <div className="text-center space-y-2">
+        <p className="text-[16px] font-bold text-[#222]">불러오지 못했어요</p>
+        <p className="text-[13px] text-[#aaa]">{message}</p>
+      </div>
+    </div>
+  )
+}
+
+export default function ProfilePage() {
+  const { id } = useParams<{ id: string }>()
+  const state = useProfile(id)
+
+  if (state.status === 'loading') return <LoadingScreen />
+  if (state.status === 'error') return <ErrorScreen message={state.message} />
+
+  const { profile } = state
 
   return (
     <div className="min-h-screen bg-[#f8f8f8]">
@@ -75,7 +100,7 @@ export default function ProfilePage() {
             />
           </section>
 
-          {/* 세운/월운 */}
+          {/* 오늘의 운세 */}
           <section id="fortune">
             <TodayFortuneSection todayFortune={profile.todayFortune} />
           </section>

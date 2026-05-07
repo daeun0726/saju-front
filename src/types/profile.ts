@@ -10,7 +10,7 @@ export interface Pillar {
 export interface CompatibilityPerson {
   name: string
   gender: string
-  location: string
+  location?: string
   score: number
   strengths: string[]
   weaknesses: string[]
@@ -19,10 +19,10 @@ export interface CompatibilityPerson {
 }
 
 export interface OtherProfile {
-  id: string
+  id?: string
   name: string
   gender: string
-  location: string
+  location?: string
 }
 
 export interface SajuProfile {
