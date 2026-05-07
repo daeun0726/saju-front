@@ -73,8 +73,9 @@ export interface SajuResult {
 
 export interface CompatResult {
   top3: {
-    avatar: string
+    photo?: string
     nickname: string
+    location?: string
     desc: string
     score: number
     good_tags: string[]
@@ -82,17 +83,12 @@ export interface CompatResult {
     good_detail: string
     bad_detail: string
   }[]
-  other_participants: {
-    id?: string
-    avatar: string
-    nickname: string
-    desc: string
-  }[]
 }
 
-export interface AllParticipant {
+export interface OtherParticipant {
   id: string
   nickname: string
   gender: string
+  location?: string
   photo?: string
 }

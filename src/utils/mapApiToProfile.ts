@@ -1,5 +1,5 @@
 import type { SajuProfile, Ohaeng } from '../types/profile'
-import type { Manseryeok, SajuResult, CompatResult, AllParticipant } from '../types/api'
+import type { Manseryeok, SajuResult, CompatResult, OtherParticipant } from '../types/api'
 import { parsePillar } from './pillars'
 
 function join(arr: string[]): string {
@@ -23,16 +23,8 @@ function parseOhaeng(value: string): Ohaeng {
   return OHAENG_LIST.find((o) => value.includes(o)) ?? '목'
 }
 
-// 닉네임 → AllParticipant 매핑 (Gemini가 "님" 붙이는 경우 대비)
-function buildPhotoMap(participants: AllParticipant[]): Map<string, string> {
-  const map = new Map<string, string>()
-  for (const p of participants) {
-    if (!p.photo) continue
-    const url = convertDriveUrl(p.photo)
-    map.set(p.nickname, url)
-    map.set(p.nickname + '님', url)
-  }
-  return map
+function toPhotoUrl(url: string | undefined): string | undefined {
+  return url ? convertDriveUrl(url) : undefined
 }
 
 export function mapApiToProfile(raw: Record<string, string>, id: string): SajuProfile {
@@ -47,13 +39,11 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
     try { compatResult = JSON.parse(compatRaw) } catch { /* null 유지 */ }
   }
 
-  let allParticipants: AllParticipant[] = []
-  const allRaw = r['전체참가자']
-  if (allRaw && allRaw.trim() !== '' && allRaw !== 'null') {
-    try { allParticipants = JSON.parse(allRaw) } catch { /* 빈 배열 유지 */ }
+  let others: OtherParticipant[] = []
+  const othersRaw = r['나머지참가자']
+  if (othersRaw && othersRaw.trim() !== '' && othersRaw !== 'null') {
+    try { others = JSON.parse(othersRaw) } catch { /* 빈 배열 유지 */ }
   }
-
-  const photoMap = buildPhotoMap(allParticipants)
 
   const { 사주4주, 오행분포 } = manseryeok
   const { day_master } = sajuResult.saju_summary
@@ -66,30 +56,22 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
   const compatibility = compatResult?.top3.map((p) => ({
     name: p.nickname,
     gender: p.desc,
+    location: p.location,
+    photoUrl: toPhotoUrl(p.photo),
     score: p.score,
-    photoUrl: photoMap.get(p.nickname) ?? photoMap.get(p.nickname.replace(/님$/, '')),
     strengths: p.good_tags,
     weaknesses: p.bad_tags,
     strengthDetail: p.good_detail,
     weaknessDetail: p.bad_detail,
   })) ?? []
 
-  // 전체참가자 필드 우선, 없으면 other_participants 폴백
-  const otherProfiles = allParticipants.length > 0
-    ? allParticipants.map((p) => ({
-        id: p.id,
-        name: p.nickname,
-        gender: p.gender,
-        photoUrl: p.photo ? convertDriveUrl(p.photo) : undefined,
-      }))
-    : (compatResult?.other_participants.map((p) => ({
-        id: p.id ?? '',
-        name: p.nickname,
-        gender: p.desc,
-      })) ?? [])
-
-  const rawPhotoUrl = r['프로필 사진']
-  const photoUrl = rawPhotoUrl ? convertDriveUrl(rawPhotoUrl) : undefined
+  const otherProfiles = others.map((p) => ({
+    id: p.id,
+    name: p.nickname,
+    gender: p.gender,
+    location: p.location,
+    photoUrl: toPhotoUrl(p.photo),
+  }))
 
   return {
     id,
@@ -97,7 +79,7 @@ export function mapApiToProfile(raw: Record<string, string>, id: string): SajuPr
     gender: sajuResult.profile.gender || r['성별'],
     location: sajuResult.profile.location || r['거주지'],
     hobbies: sajuResult.profile.hobby_tags,
-    photoUrl,
+    photoUrl: toPhotoUrl(r['프로필 사진']),
     mainOhaeng,
     ohaengCount: 오행분포,
     pillars: {
