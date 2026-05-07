@@ -1,14 +1,22 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { OtherProfile } from '../../types/profile'
 
+const INITIAL_SHOW = 3
+
 export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }) {
+  const [expanded, setExpanded] = useState(false)
+
   if (profiles.length === 0) return null
+
+  const hasMore = profiles.length > INITIAL_SHOW
+  const visible = expanded ? profiles : profiles.slice(0, INITIAL_SHOW)
 
   return (
     <div className="space-y-2.5">
       <p className="text-[14px] font-bold text-[#222]">다른 참가자들 프로필 카드 보러 가기</p>
       <div className="space-y-2.5">
-        {profiles.map((profile, i) => {
+        {visible.map((profile, i) => {
           const inner = (
             <>
               <div className="w-10 h-10 rounded-[20px] bg-[#f5f5f5] flex items-center justify-center shrink-0">
@@ -40,6 +48,17 @@ export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }
           )
         })}
       </div>
+
+      {hasMore && (
+        <button
+          onClick={() => setExpanded((v) => !v)}
+          className="w-full bg-white rounded-[14px] py-3 text-[13px] font-medium text-[#aaa] hover:bg-gray-50 transition-colors"
+        >
+          {expanded
+            ? '접기'
+            : `더 보기 +${profiles.length - INITIAL_SHOW}명`}
+        </button>
+      )}
     </div>
   )
 }
