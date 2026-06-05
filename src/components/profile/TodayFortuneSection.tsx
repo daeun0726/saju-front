@@ -19,9 +19,9 @@ function FortuneCard({
 }) {
   return (
     <div className="bg-[#f9f9f9] rounded-xl px-3.5 py-3 space-y-1">
-      <p className={`text-[10px] font-bold ${colorClass}`}>{category}</p>
-      <p className="text-[12px] font-bold text-[#222]">{summary}</p>
-      <p className="text-[13px] text-[#555] leading-5.25 pt-px">{description}</p>
+      <p className={`text-[12px] font-bold ${colorClass}`}>{category}</p>
+      <p className="text-[16px] font-bold text-[#222]">{summary}</p>
+      <p className="text-[14px] text-[#444] leading-5.25 pt-px">{description}</p>
     </div>
   )
 }
@@ -33,7 +33,7 @@ export default function TodayFortuneSection({
 }) {
   return (
     <div className="bg-white rounded-2xl px-4.5 py-4 space-y-2">
-      <p className="text-[12px] font-medium text-[#aaa]">오늘의 운세</p>
+      <p className="text-[12px] font-bold text-[#aaa]">오늘의 운세</p>
       <FortuneCard
         category="오늘 총운세"
         colorClass={CATEGORY_COLORS['오늘총운세']}

@@ -34,7 +34,7 @@ export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }
 
   return (
     <div className="space-y-2.5">
-      <p className="text-[14px] font-bold text-[#222]">다른 참가자들 프로필 카드 보러 가기</p>
+      <p className="text-[16px] font-bold text-[#222]">다른 참가자들 프로필 카드 보러 가기</p>
       <div className="space-y-2.5">
         {visible.map((profile, i) => {
           const inner = (
@@ -42,7 +42,7 @@ export default function OtherProfiles({ profiles }: { profiles: OtherProfile[] }
               <Avatar name={profile.name} photoUrl={profile.photoUrl} />
               <div>
                 <p className="text-[14px] font-bold text-[#222]">{profile.name}</p>
-                <p className="text-[12px] text-[#aaa] mt-0.5">
+                <p className="text-[12px] font-bold text-[#aaa] mt-0.5">
                   {profile.gender}{profile.location ? ` · ${profile.location}` : ''}
                 </p>
               </div>

@@ -10,20 +10,13 @@ function normalizeKeys(raw: Record<string, string>): Record<string, string> {
   return Object.fromEntries(Object.entries(raw).map(([k, v]) => [k.trim(), v]))
 }
 
-function convertDriveUrl(url: string): string {
-  const pathMatch = url.match(/\/d\/([^/?]+)/)
-  const id = pathMatch?.[1] ?? url.match(/[?&]id=([^&]+)/)?.[1]
-  if (id) return `/api/photo?id=${id}`
-  return url
-}
-
 const OHAENG_LIST: Ohaeng[] = ['목', '화', '토', '금', '수']
 function parseOhaeng(value: string): Ohaeng {
   return OHAENG_LIST.find((o) => value.includes(o)) ?? '목'
 }
 
 function toPhotoUrl(url: string | undefined): string | undefined {
-  return url ? convertDriveUrl(url) : undefined
+  return url || undefined
 }
 
 export function mapApiToProfile(raw: Record<string, string>, id: string): SajuProfile {

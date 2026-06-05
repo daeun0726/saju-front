@@ -32,8 +32,8 @@ export default function ProfileHeader({ profile }: { profile: SajuProfile }) {
           )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-[#222] font-bold text-[17px] leading-snug">{profile.name}</p>
-          <p className="text-[#aaa] text-[12px] mt-1">
+          <p className="text-[#222] font-bold text-[16px] leading-normal">{profile.name}</p>
+          <p className="text-[#999] text-[12px] mt-1">
             {profile.gender} · {profile.location}
           </p>
           <div className="flex flex-wrap gap-x-1.5 mt-2 opacity-80">
