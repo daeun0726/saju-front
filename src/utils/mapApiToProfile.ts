@@ -16,7 +16,11 @@ function parseOhaeng(value: string): Ohaeng {
 }
 
 function toPhotoUrl(url: string | undefined): string | undefined {
-  return url || undefined
+  if (!url) return undefined
+  if (url.includes('drive.google.com/thumbnail')) return url
+  const id = url.match(/[?&]id=([^&]+)/)?.[1] ?? url.match(/\/d\/([^/?]+)/)?.[1]
+  if (id) return `https://drive.google.com/thumbnail?id=${id}&sz=w400`
+  return url
 }
 
 export function mapApiToProfile(raw: Record<string, string>, id: string): SajuProfile {
