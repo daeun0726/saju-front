@@ -1,8 +1,24 @@
 import type { SajuProfile } from '../../types/profile'
 
-// "5월 말 ~ 6월 초" → "5월 ~ 6월"
 function formatPeriod(period: string) {
-  return period.replace(/(\d+월)\s+[가-힣]+/g, '$1')
+  const yearMatch = period.match(/(\d{4})년/)
+  const year = yearMatch ? parseInt(yearMatch[1]) : new Date().getFullYear()
+
+  // "4–6월", "4-6월", "4~6월" 형태 → 중간 달
+  const rangeMatch = period.match(/(\d+)[–\-~](\d+)월/)
+  if (rangeMatch) {
+    const mid = Math.round((parseInt(rangeMatch[1]) + parseInt(rangeMatch[2])) / 2)
+    return `${year}년 ${mid}월`
+  }
+
+  // 나머지: "N월" 패턴 추출 → 중간 달
+  const months = [...period.matchAll(/(\d+)월/g)].map((m) => parseInt(m[1]))
+  if (months.length > 0) {
+    const mid = Math.round(months.reduce((a, b) => a + b, 0) / months.length)
+    return `${year}년 ${mid}월`
+  }
+
+  return period
 }
 
 interface Props {
