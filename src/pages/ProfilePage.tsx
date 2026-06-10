@@ -102,7 +102,6 @@ export default function ProfilePage() {
             />
           </section>
 
-          {/* 오늘의 운세 이하 — preview 모드에서 숨김 */}
           {!isPreview && (
             <>
               <section id="fortune">
